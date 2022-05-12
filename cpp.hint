@@ -1,0 +1,2 @@
+#define TESTEXTENSION_API __declspec(dllexport)
+#define TESTEXTENSION_API __declspec(dllimport)
