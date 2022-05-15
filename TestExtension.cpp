@@ -24,11 +24,22 @@ WSADATA wsaData;
 extern "C"
 {
 	__declspec (dllexport) void __stdcall RVExtension(char* output, int outputSize, const char* function);
+	__declspec (dllexport) int __stdcall RVExtensionArgs(char* output, int outputSize, const char* function, const char** argv, int argc);
+	__declspec (dllexport) void __stdcall RVExtensionVersion(char* output, int outputsize);
 }
 
-void __stdcall RVExtension(char* output, int outputSize, const char* function)
-{
+void __stdcall RVExtension(char* output, int outputSize, const char* function) {
+	// do URL call stuff here
 	strncpy_s(output, outputSize, "IT WORKS!", _TRUNCATE);
+}
+
+int __stdcall RVExtensionArgs(char* output, int outputSize, const char* function, const char** argv, int argc) {
+	strncpy_s(output, outputSize, "Invalid params (use callExtension primary syntax)", _TRUNCATE);
+	return 0;
+}
+
+void __stdcall RVExtensionVersion(char* output, int outputSize) {
+	strncpy_s(output, outputSize, "Test-Extension v1.0", _TRUNCATE);
 }
 
 
