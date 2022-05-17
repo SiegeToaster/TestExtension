@@ -11,9 +11,10 @@
 #include <Windows.h>
 #include <winsock.h> // needed for WSADATA
 #include <string>
+#include <vector>
 #include <stdio.h>
 
-using std::string;
+using namespace std;
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -28,9 +29,12 @@ extern "C"
 	__declspec (dllexport) void __stdcall RVExtensionVersion(char* output, int outputsize);
 }
 
-void __stdcall RVExtension(char* output, int outputSize, const char* function) {
+void __stdcall RVExtension(char* output, int outputSize, const char* input) {
 	// do URL call stuff here
-	strncpy_s(output, outputSize, "IT WORKS!", _TRUNCATE);
+	vector<string> testVector = explode(input, ',');
+	string testString(testVector.begin(), testVector.end());
+	char* testInput = const_cast<char*>(testString.c_str());
+	strncpy_s(output, outputSize, testInput, _TRUNCATE);
 }
 
 int __stdcall RVExtensionArgs(char* output, int outputSize, const char* function, const char** argv, int argc) {
@@ -39,9 +43,34 @@ int __stdcall RVExtensionArgs(char* output, int outputSize, const char* function
 }
 
 void __stdcall RVExtensionVersion(char* output, int outputSize) {
-	strncpy_s(output, outputSize, "Test-Extension v1.0", _TRUNCATE);
+	strncpy_s(output, outputSize, "Test-Extension v0.2", _TRUNCATE);
 }
 
+vector<string> explode(const string& str, const char& ch) {
+	// https://stackoverflow.com/questions/890164/how-can-i-split-a-string-by-a-delimiter-into-an-array
+	string next;
+	vector<string> result;
+
+	// For each character in the string
+	for (string::const_iterator it = str.begin(); it != str.end(); it++) {
+		// If we've hit the terminal character
+		if (*it == ch) {
+			// If we have some characters accumulated
+			if (!next.empty()) {
+				// Add them to the result vector
+				result.push_back(next);
+				next.clear();
+			}
+		}
+		else {
+			// Accumulate the next character into the sequence
+			next += *it;
+		}
+	}
+	if (!next.empty())
+		result.push_back(next);
+	return result;
+}
 
 void mParseUrl(char* mUrl, string& serverName, string& filePath, string& fileName) {
 	string::size_type n;
